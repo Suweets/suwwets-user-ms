@@ -1,0 +1,29 @@
+{
+  "name": "suweets-backend-user-ms",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/Suweets/suwwets-user-ms.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Suweets/suwwets-user-ms/issues"
+  },
+  "homepage": "https://github.com/Suweets/suwwets-user-ms#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.0",
+    "nodemon": "^3.1.9"
+  }
+}
