@@ -60,4 +60,39 @@ endpoints.delete('/usuario/:id', async (req, res) => {
   });
 });
 
+endpoints.get('/usuario/:id', async (req, res) => {
+  const id = req.params.id;
+  
+  let userInfo = await user.getUserInfo(id);
+
+  if (!userInfo) {
+    return res.status(404).send({
+      message: 'Usuário não encontrado.'
+    });
+  }
+
+  return res.status(200).send({
+    user: userInfo
+  });
+});
+
+endpoints.post('/usuario', async (req, res) => {
+  const userData = req.body;
+
+  let result = await user.createUser(userData);
+
+  let [userInfo] = await user.getUserByName(userData.nome);
+
+  if (userInfo) {
+    return res.status(403).send({
+      message: 'Usuário já existente.'
+    });
+  }
+
+  return res.status(200).send({
+    message: 'Usuário cadastrado com sucesso!',
+    affectedRows: result
+  })
+});
+
 export default endpoints;

@@ -4,7 +4,9 @@ export async function getAllUsers() {
   const query = `
     SELECT id_user as id,
            nm_user as nome,
-           telefone as telefone
+           sbn_user as sobrenome,
+           telefone as telefone,
+           cpf as cpf
     FROM tb_user;    
   `;
 
@@ -17,7 +19,9 @@ export async function getUserByName(name) {
   const query = `
     SELECT id_user as id,
            nm_user as nome,
-           telefone as telefone
+           sbn_user as sobrenome,
+           telefone as telefone,
+           cpf as cpf
     FROM tb_user
     WHERE nm_user LIKE ?;
   `;
@@ -31,13 +35,15 @@ export async function updateUser(id, user) {
   const query = `
     UPDATE tb_user
     SET nm_user = ?,
-        telefone = ?
+        sbn_user = ?,
+        telefone = ?,
+        cpf = ?
     WHERE id_user = ?;
   `;
 
-  const { nome, telefone } = user
+  const { nome, sobrenome, telefone, cpf } = user
 
-  let [result] = await connection.query(query, [nome, telefone, id]);
+  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf, id]);
   
   return result.affectedRows;
 }
@@ -51,4 +57,31 @@ export async function deleteUser(id) {
   let [result] = await connection.query(query, [id]);
 
   return result.affectedRows;
+}
+
+export async function getUserInfo(id) {
+  const query = `
+    SELECT id_user as id,
+           nm_user as nome,
+           telefone as telefone
+    FROM tb_user
+    WHERE id_user = ?;
+  `;
+
+  let [data] = await connection.query(query, [id]);
+
+  return data[0];
+}
+
+export async function createUser(user) {
+  const query = `
+    INSERT INTO tb_user (nm_user, sbn_user, telefone, cpf)
+    VALUE (?, ?, ?, ?);
+  `;
+
+  const { nome, sobrenome, telefone, cpf } = user;
+
+  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf]);
+
+  return result.insertId;
 }
