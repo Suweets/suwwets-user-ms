@@ -13,5 +13,5 @@ app.use(express.json());
 routes(app);
 
 app.listen(PORT, () => {
-  console.log(`Servidor subui na porta ${PORT}`);
+  console.log(`Servidor subiu na porta ${PORT}`);
 });
