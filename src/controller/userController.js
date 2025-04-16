@@ -11,10 +11,10 @@ endpoints.get('/usuarios', async (req, res) => {
   });
 });
 
-endpoints.get('/usuarios/:name', async (req, res) => {
-  const name = req.params.name;
+endpoints.get('/usuarios/:id', async (req, res) => {
+  const id = req.params.id;
 
-  let users = await user.getUserByName(name);
+  let users = await user.getUserById(id);
 
   if (users.length === 0) {
     return res.status(404).send({
@@ -65,7 +65,7 @@ endpoints.get('/usuario/:id', async (req, res) => {
   
   let userInfo = await user.getUserInfo(id);
 
-  if (!userInfo) {
+  if (result === 0) {
     return res.status(404).send({
       message: 'Usuário não encontrado.'
     });
@@ -81,11 +81,15 @@ endpoints.post('/usuario', async (req, res) => {
 
   let result = await user.createUser(userData);
 
-  let [userInfo] = await user.getUserByName(userData.nome);
 
-  if (userInfo) {
-    return res.status(403).send({
-      message: 'Usuário já existente.'
+  if (result === 0) {
+    return res.status(400).send({
+      message: 'Erro ao cadastrar usuário.'
+    });
+  }
+  if (result === -1) {
+    return res.status(400).send({
+      message: 'Usuário já cadastrado.'
     });
   }
 
