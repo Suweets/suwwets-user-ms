@@ -8,7 +8,7 @@ export async function createLogin(email, password) {
 
   let resultEmail = await getByEmail(email);
 
-  if (resultEmail.length !== 0) {
+  if (resultEmail !== 0) {
     return 0;
   }
 
