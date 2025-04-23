@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as user from '../repository/userRepository.js';
+import { login } from '../repository/loginRepository.js';
 
 const endpoints = Router();
 
@@ -23,7 +24,7 @@ endpoints.get('/usuarios/:id', async (req, res) => {
   }
 
   return res.status(200).send({
-    user:users
+    user: users
   });
 });
 
@@ -60,12 +61,12 @@ endpoints.delete('/usuario/:id', async (req, res) => {
   });
 });
 
-endpoints.get('/usuario/:id', async (req, res) => {
+endpoints.get('/usuario/info', async (req, res) => {
   const id = req.params.id;
-  
+
   let userInfo = await user.getUserInfo(id);
 
-  if (result === 0) {
+  if (userInfo === 0) {
     return res.status(404).send({
       message: 'Usuário não encontrado.'
     });
@@ -81,13 +82,14 @@ endpoints.post('/usuario', async (req, res) => {
 
   let result = await user.createUser(userData);
 
+  let alredyRegistered = await user.getUserByCpf(userData.cpf);
 
-  if (result === 0) {
+  if (result.affectedRows === 0) {
     return res.status(400).send({
       message: 'Erro ao cadastrar usuário.'
     });
   }
-  if (result === -1) {
+  if (alredyRegistered.length > 0) {
     return res.status(400).send({
       message: 'Usuário já cadastrado.'
     });
@@ -95,6 +97,23 @@ endpoints.post('/usuario', async (req, res) => {
 
   return res.status(200).send({
     message: 'Usuário cadastrado com sucesso!',
+    id: result
+  });
+});
+
+endpoints.get('/usuario/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  let result = await login(email, password);
+
+  if (result === 0) {
+    return res.status(404).send({
+      message: "Email e/ou senha inválidos."
+    });
+  }
+
+  return res.status(200).send({
+    message: "Login efetuado com sucesso.",
     affectedRows: result
   })
 });

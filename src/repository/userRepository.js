@@ -1,4 +1,6 @@
 import connection from "../services/userConnection.js";
+import { createCarrinho } from "./carrinhoReppsitory.js";
+import { createLogin } from "./loginRepository.js"
 
 export async function getAllUsers() {
   const query = `
@@ -79,9 +81,31 @@ export async function createUser(user) {
     VALUE (?, ?, ?, ?, ?, ?, ?);
   `;
 
-  const { nome, sobrenome, telefone, cpf, login, funcao, carrinho } = user;
+  let carrinho = Math.floor(Math.random() * 1000000);
 
-  let result = await connection.query(query, [nome, sobrenome, telefone, cpf, login, funcao, carrinho]);
+  let resultCarrinho = await createCarrinho(carrinho);
+
+  const { nome, sobrenome, telefone, cpf, funcao, password, email } = user;
+
+  const idLogin = await createLogin(email, password);
+
+  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf, idLogin, funcao, resultCarrinho]);
 
   return result.insertId;
+}
+
+export async function getUserByCpf(cpf) {
+  const query = `
+    SELECT id_user as id,
+           nm_user as nome,
+           sbn_user as sobrenome,
+           telefone as telefone,
+           cpf as cpf
+    FROM tb_user
+    WHERE cpf = ?;
+  `;
+
+  let [data] = await connection.query(query, [cpf]);
+
+  return data[0];
 }

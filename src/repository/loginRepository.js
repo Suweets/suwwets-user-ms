@@ -1,14 +1,12 @@
 import connection from "../services/userConnection.js";
 
-export async function createLogin(user) {
+export async function createLogin(email, password) {
   const query = `
-    INSERT INTO tb_login (email, senha)
+    INSERT INTO tb_login (email, password)
     VALUES (?, ?);
   `;
 
-  const { email, senha } = user;
-
-  let [result] = await connection.query(query, [email, senha]);
+  let [result] = await connection.query(query, [email, password]);
 
   return result.insertId;
 };
@@ -37,20 +35,6 @@ export async function getAllLogins() {
   return data;
 };
 
-export async function getLoginByEmail(email) {
-  const query = `
-    SELECT id_login as id,
-           email,
-           senha
-    FROM tb_login
-    WHERE email = ?;
-  `;
-
-  let [data] = await connection.query(query, email);
-
-  return data;
-};
-
 export async function updateLogin(id) {
   const query = `
     UPDATE tb_login
@@ -62,4 +46,18 @@ export async function updateLogin(id) {
   let [result] = await connection.query(query, [email, senha, id]);
 
   return result.affectedRows;
+};
+
+export async function login(user) {
+  const { email, password } = user;
+
+  const query = `
+    SELECT * 
+    FROM tb_login
+    WHERE email = ? AND password = ?;
+  `;
+
+  let [result] = await connection.query(query, [email, password]);
+
+  result.length;
 }
