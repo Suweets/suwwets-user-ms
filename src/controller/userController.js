@@ -80,18 +80,19 @@ endpoints.get('/usuario/info', async (req, res) => {
 endpoints.post('/usuario', async (req, res) => {
   const userData = req.body;
 
-  let result = await user.createUser(userData);
-
   let alredyRegistered = await user.getUserByCpf(userData.cpf);
+
+  if (alredyRegistered != 0) {
+    return res.status(400).send({
+      message: 'Usuário já cadastrado.'
+    });
+  }
+
+  let result = await user.createUser(userData);
 
   if (result.affectedRows === 0) {
     return res.status(400).send({
       message: 'Erro ao cadastrar usuário.'
-    });
-  }
-  if (alredyRegistered.length > 0) {
-    return res.status(400).send({
-      message: 'Usuário já cadastrado.'
     });
   }
 

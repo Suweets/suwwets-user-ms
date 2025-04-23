@@ -81,15 +81,19 @@ export async function createUser(user) {
     VALUE (?, ?, ?, ?, ?, ?, ?);
   `;
 
+  // Este id de função é definido como padrão, pois o id 1 é para o admin
+  // e o id 2 é para o usuário comum.
+  const idFuncao = 2;
+
   let carrinho = Math.floor(Math.random() * 1000000);
 
   let resultCarrinho = await createCarrinho(carrinho);
 
-  const { nome, sobrenome, telefone, cpf, funcao, password, email } = user;
+  const { nome, sobrenome, telefone, cpf, password, email } = user;
 
   const idLogin = await createLogin(email, password);
 
-  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf, idLogin, funcao, resultCarrinho]);
+  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf, idLogin, idFuncao, resultCarrinho]);
 
   return result.insertId;
 }
@@ -107,5 +111,5 @@ export async function getUserByCpf(cpf) {
 
   let [data] = await connection.query(query, [cpf]);
 
-  return data[0];
+  return data.length;
 }
