@@ -1,4 +1,6 @@
-import connection from "../services/connection.js";
+import connection from "../services/userConnection.js";
+import { createCarrinho } from "./carrinhoReppsitory.js";
+import { createLogin } from "./loginRepository.js"
 
 export async function getAllUsers() {
   const query = `
@@ -15,7 +17,7 @@ export async function getAllUsers() {
   return data;
 }
 
-export async function getUserByName(name) {
+export async function getUserById(id) {
   const query = `
     SELECT id_user as id,
            nm_user as nome,
@@ -23,10 +25,10 @@ export async function getUserByName(name) {
            telefone as telefone,
            cpf as cpf
     FROM tb_user
-    WHERE nm_user LIKE ?;
+    WHERE id_user LIKE ?;
   `;
 
-  let [data] = await connection.query(query, [`%${name}%`]);
+  let [data] = await connection.query(query, id);
 
   return data;
 }
@@ -75,13 +77,35 @@ export async function getUserInfo(id) {
 
 export async function createUser(user) {
   const query = `
-    INSERT INTO tb_user (nm_user, sbn_user, telefone, cpf)
-    VALUE (?, ?, ?, ?);
+    INSERT INTO tb_user (nm_user, sbn_user, telefone, cpf, id_login, id_function, id_carrinho)
+    VALUE (?, ?, ?, ?, ?, ?, ?);
   `;
 
-  const { nome, sobrenome, telefone, cpf } = user;
+  let carrinho = Math.floor(Math.random() * 1000000);
 
-  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf]);
+  let resultCarrinho = await createCarrinho(carrinho);
+
+  const { nome, sobrenome, telefone, cpf, funcao, password, email } = user;
+
+  const idLogin = await createLogin(email, password);
+
+  let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf, idLogin, funcao, resultCarrinho]);
 
   return result.insertId;
+}
+
+export async function getUserByCpf(cpf) {
+  const query = `
+    SELECT id_user as id,
+           nm_user as nome,
+           sbn_user as sobrenome,
+           telefone as telefone,
+           cpf as cpf
+    FROM tb_user
+    WHERE cpf = ?;
+  `;
+
+  let [data] = await connection.query(query, [cpf]);
+
+  return data[0];
 }

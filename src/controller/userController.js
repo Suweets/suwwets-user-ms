@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import * as user from '../repository/userRepository.js';
+import { login } from '../repository/loginRepository.js';
 
 const endpoints = Router();
 
@@ -11,10 +12,10 @@ endpoints.get('/usuarios', async (req, res) => {
   });
 });
 
-endpoints.get('/usuarios/:name', async (req, res) => {
-  const name = req.params.name;
+endpoints.get('/usuarios/:id', async (req, res) => {
+  const id = req.params.id;
 
-  let users = await user.getUserByName(name);
+  let users = await user.getUserById(id);
 
   if (users.length === 0) {
     return res.status(404).send({
@@ -23,7 +24,7 @@ endpoints.get('/usuarios/:name', async (req, res) => {
   }
 
   return res.status(200).send({
-    user:users
+    user: users
   });
 });
 
@@ -60,12 +61,12 @@ endpoints.delete('/usuario/:id', async (req, res) => {
   });
 });
 
-endpoints.get('/usuario/:id', async (req, res) => {
+endpoints.get('/usuario/info', async (req, res) => {
   const id = req.params.id;
-  
+
   let userInfo = await user.getUserInfo(id);
 
-  if (!userInfo) {
+  if (userInfo === 0) {
     return res.status(404).send({
       message: 'Usuário não encontrado.'
     });
@@ -81,16 +82,38 @@ endpoints.post('/usuario', async (req, res) => {
 
   let result = await user.createUser(userData);
 
-  let [userInfo] = await user.getUserByName(userData.nome);
+  let alredyRegistered = await user.getUserByCpf(userData.cpf);
 
-  if (userInfo) {
-    return res.status(403).send({
-      message: 'Usuário já existente.'
+  if (result.affectedRows === 0) {
+    return res.status(400).send({
+      message: 'Erro ao cadastrar usuário.'
+    });
+  }
+  if (alredyRegistered.length > 0) {
+    return res.status(400).send({
+      message: 'Usuário já cadastrado.'
     });
   }
 
   return res.status(200).send({
     message: 'Usuário cadastrado com sucesso!',
+    id: result
+  });
+});
+
+endpoints.get('/usuario/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  let result = await login(email, password);
+
+  if (result === 0) {
+    return res.status(404).send({
+      message: "Email e/ou senha inválidos."
+    });
+  }
+
+  return res.status(200).send({
+    message: "Login efetuado com sucesso.",
     affectedRows: result
   })
 });
