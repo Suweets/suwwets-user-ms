@@ -71,9 +71,7 @@ export async function getByEmail(email) {
 export async function login(email, password) {
   let resultEmail = await getByEmail(email);
 
-  console.log(resultEmail)
-
-  if (resultEmail != 0) {
+  if (resultEmail === 0) {
     return 0;
   }
 
