@@ -89,7 +89,7 @@ endpoints.post('/usuario', async (req, res) => {
 endpoints.post('/usuario/login', async (req, res) => {
   const { email, password } = req.body;
 
-  let result = await login(email, password);
+  let result = await login(email, password);  
 
   if (result === 0) {
     return res.status(404).send({
