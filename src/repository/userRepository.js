@@ -30,7 +30,7 @@ export async function updateUser(id, user) {
   const { nome, sobrenome, telefone, cpf } = user
 
   let [result] = await connection.query(query, [nome, sobrenome, telefone, cpf, id]);
-  
+
   return result.affectedRows;
 }
 
@@ -100,12 +100,13 @@ export async function getUserByCpf(cpf) {
            nm_user as nome,
            sbn_user as sobrenome,
            telefone as telefone,
-           cpf as cpf
+           cpf as cpf,
+           id_carrinho
     FROM tb_user
     WHERE cpf = ?;
   `;
 
   let [data] = await connection.query(query, [cpf]);
 
-  return data.length;
+  return data;
 }

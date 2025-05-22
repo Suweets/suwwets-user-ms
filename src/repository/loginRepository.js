@@ -79,7 +79,11 @@ export async function login(email, password) {
     SELECT nm_user as nome,
            sbn_user as sobrenome,
            telefone as telefone,
-           cpf as cpf
+           cpf as cpf,
+           email,
+           password,
+           id_user as id,
+           id_carrinho as carrinho
     FROM tb_user
     JOIN tb_login
     ON tb_user.id_login = tb_login.id_login
