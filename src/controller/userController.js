@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as user from '../repository/userRepository.js';
-import { login, getByEmail } from '../repository/loginRepository.js';
+import { login } from '../repository/loginRepository.js';
+import * as pedido from '../repository/pedidoRepository.js';
 
 const endpoints = Router();
 
@@ -101,6 +102,22 @@ endpoints.post('/usuario/login', async (req, res) => {
     message: "Login efetuado com sucesso.",
     userInfo: result
   })
+});
+
+endpoints.post('/usuario/pedido', async (req, res) => {
+  const { id_carrinho } = req.body;
+
+  let result = await pedido.createPedido(id_carrinho);
+
+  if (result === 0) {
+    return res.status(404).send({
+      message: 'Usuário não encontrado'
+    });
+  }
+
+  return res.status(200).send({
+    message: 'Pedido criado com sucesso!'
+  });
 });
 
 export default endpoints;
