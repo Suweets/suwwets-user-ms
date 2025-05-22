@@ -105,13 +105,21 @@ endpoints.post('/usuario/login', async (req, res) => {
 });
 
 endpoints.post('/usuario/pedido', async (req, res) => {
-  const { id_carrinho } = req.body;
+  const { id_carrinho, id_fatia, id_user } = req.body;
 
-  let result = await pedido.createPedido(id_carrinho);
+  let result = await pedido.createPedido(id_carrinho, id_user);
 
   if (result === 0) {
     return res.status(404).send({
       message: 'Usuário não encontrado'
+    });
+  }
+
+  let resultLink = await pedido.linkPedido(result, id_fatia);
+  
+  if (resultLink == 0) {
+    return res.status(404).send({
+      message: 'Pedido não encontrado'
     });
   }
 
